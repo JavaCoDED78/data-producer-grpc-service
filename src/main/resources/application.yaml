@@ -9,3 +9,6 @@ grpc:
     GLOBAL:
       address: ${GRPC_HOST}
       negotiation-type: plaintext
+
+push:
+  batch-size: ${BATCH_SIZE}

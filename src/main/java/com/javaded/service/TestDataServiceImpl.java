@@ -3,9 +3,12 @@ package com.javaded.service;
 import com.javaded.model.Data;
 import com.javaded.model.test.DataTestOptions;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -18,8 +21,12 @@ public class TestDataServiceImpl implements TestDataService {
             = Executors.newSingleThreadScheduledExecutor();
     private final GRPCDataService GRPCDataService;
 
+    @Value("${push.batch-size}")
+    private int batchSize;
+
     @Override
     public void sendMessages(DataTestOptions testOptions) {
+        List<Data> dataBatch = new ArrayList<>();
         if (testOptions.getMeasurementTypes().length > 0) {
             executorService.scheduleAtFixedRate(
                     () -> {
@@ -38,7 +45,11 @@ public class TestDataServiceImpl implements TestDataService {
                         data.setTimestamp(
                                 LocalDateTime.now()
                         );
-                        GRPCDataService.send(data);
+                        dataBatch.add(data);
+                        if (dataBatch.size() == batchSize) {
+                            GRPCDataService.send(dataBatch);
+                            dataBatch.clear();
+                        }
                     },
                     0,
                     testOptions.getDelayInSeconds(),
