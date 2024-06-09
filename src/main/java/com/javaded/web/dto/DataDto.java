@@ -1,24 +1,18 @@
 package com.javaded.web.dto;
 
-import com.javaded.model.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.javaded.model.Data;
 
 import java.time.LocalDateTime;
 
-@NoArgsConstructor
-@Getter
-@Setter
-public class DataDto {
+public record DataDto(
+        Long sensorId,
 
-    private Long sensorId;
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+        LocalDateTime timestamp,
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime timestamp;
-
-    private double measurement;
-    private Data.MeasurementType measurementType;
+        double measurement,
+        Data.MeasurementType measurementType
+) {
 
 }

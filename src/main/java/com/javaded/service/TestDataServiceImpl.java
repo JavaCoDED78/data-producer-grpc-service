@@ -17,8 +17,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class TestDataServiceImpl implements TestDataService {
 
-    private final ScheduledExecutorService executorService
-            = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private final GRPCDataService GRPCDataService;
 
     @Value("${push.batch-size}")

@@ -1,11 +1,11 @@
 package com.javaded.service;
 
 import com.google.protobuf.Empty;
-import com.javaded.model.Data;
+import com.google.protobuf.Timestamp;
 import com.javaded.grpccommon.DataServerGrpc;
 import com.javaded.grpccommon.GRPCData;
 import com.javaded.grpccommon.MeasurementType;
-import com.google.protobuf.Timestamp;
+import com.javaded.model.Data;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,26 @@ public class GRPCDataServiceImpl implements GRPCDataService {
 
     @Override
     public void send(Data data) {
-        GRPCData request = GRPCData.newBuilder()
+//        StreamObserver<Empty> responseObserver = new StreamObserver<>() {
+//            @Override
+//            public void onNext(Empty empty) {
+//            }
+//
+//            @Override
+//            public void onError(Throwable throwable) {
+//            }
+//
+//            @Override
+//            public void onCompleted() {
+//            }
+//        };
+        GRPCData request = build(data);
+        blockingStub.addData(request);
+//        asyncStub.addData(request, responseObserver);
+    }
+
+    private GRPCData build(Data data) {
+        return GRPCData.newBuilder()
                 .setSensorId(data.getSensorId())
                 .setTimestamp(
                         Timestamp.newBuilder()
@@ -38,7 +57,6 @@ public class GRPCDataServiceImpl implements GRPCDataService {
                 )
                 .setMeasurement(data.getMeasurement())
                 .build();
-        blockingStub.addData(request);
     }
 
     @Override
@@ -58,23 +76,7 @@ public class GRPCDataServiceImpl implements GRPCDataService {
         };
 
         StreamObserver<GRPCData> requestObserver = asyncStub.addStreamOfData(responseObserver);
-        for (Data d : data) {
-            GRPCData request = GRPCData.newBuilder()
-                    .setSensorId(d.getSensorId())
-                    .setTimestamp(
-                            Timestamp.newBuilder()
-                                    .setSeconds(
-                                            d.getTimestamp()
-                                                    .toEpochSecond(ZoneOffset.UTC)
-                                    )
-                                    .build())
-                    .setMeasurementType(
-                            MeasurementType.valueOf(d.getMeasurementType().name())
-                    )
-                    .setMeasurement(d.getMeasurement())
-                    .build();
-            requestObserver.onNext(request);
-        }
+        data.forEach(elem -> requestObserver.onNext(build(elem)));
         requestObserver.onCompleted();
     }
 
