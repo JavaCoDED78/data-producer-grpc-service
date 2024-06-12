@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_package = "com.example.grpccommon";
+option java_package = "com.javaded.grpccommon";
 option java_outer_classname = "GeneratorProto";
 option objc_class_prefix = "RTG";
 
