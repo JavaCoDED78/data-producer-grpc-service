@@ -18,7 +18,7 @@
 
     <properties>
         <java.version>21</java.version>
-        <mapstruct.version>1.6.0</mapstruct.version>
+        <mapstruct.version>1.6.2</mapstruct.version>
         <grpc.version>1.60.0</grpc.version>
         <protoc.version>3.25.1</protoc.version>
         <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
